@@ -6,10 +6,10 @@ aips
    - [x] rotate
    - [x] scale
    - [x] resize
-   - [ ] cut out
-   - [ ] flip
+   - [x] cut out
+   - [x] flip
    - [ ] remove background
-   - [ ] remove row or column
+   - [x] remove row or column
  - calco
    - [x] gray
    - [x] binarization
@@ -28,3 +28,8 @@ aips
    - [ ] save as jpeg
    - [ ] save as gif
    - [ ] batch process
+ - filter
+   - [ ] area filter
+   - [ ] midian filter
+   - [ ] average filter
+   - [x] template filter

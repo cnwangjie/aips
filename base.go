@@ -146,3 +146,33 @@ func Cut(src image.Image, rect image.Rectangle) image.Image {
 	}
 	return dst
 }
+
+func FlipX(src image.Image) image.Image {
+	rect := src.Bounds()
+	width := rect.Dx()
+	height := rect.Dy()
+	dst := image.NewRGBA(rect)
+	for x := 0; x < width; x += 1 {
+		for y := 0; y < height; y += 1 {
+			dst.Set(x, y, src.At(width-x-1, y))
+		}
+	}
+	return dst
+}
+
+func FlipY(src image.Image) image.Image {
+	rect := src.Bounds()
+	width := rect.Dx()
+	height := rect.Dy()
+	dst := image.NewRGBA(rect)
+	for x := 0; x < width; x += 1 {
+		for y := 0; y < height; y += 1 {
+			dst.Set(x, y, src.At(x, height-y-1))
+		}
+	}
+	return dst
+}
+
+func RemoveLine(src image.Image, top, right, bottom, left int) image.Image {
+	return Cut(src, image.Rect(left, top, src.Bounds().Dx()-right, src.Bounds().Dy()-bottom))
+}

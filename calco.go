@@ -6,6 +6,21 @@ import (
 	"math"
 )
 
+func ColorDiff(a, b color.Color) float64 {
+	ra, ga, ba, _ := a.RGBA()
+	rb, gb, bb, _ := b.RGBA()
+	return math.Sqrt((30*float64(ra-rb)*float64(ra-rb) + 59*float64(ga-gb)*float64(ga-gb) + 11*float64(ba-bb)*float64(ba-bb)) / 100)
+}
+
+func Gaussian(x, y int, sigma float64) float64 {
+	return (1 / (2 * math.Pi * sigma * sigma)) * math.Pow(math.E, -(float64(x)*float64(x)+float64(y)*float64(y))/(4*sigma*sigma))
+}
+
+func Gray(c color.Color) uint16 {
+	r, g, b, _ := c.RGBA()
+	return uint16((r*30 + g*59 + b*11) / 100)
+}
+
 func Binarization(src image.Image) image.Image {
 	rect := src.Bounds()
 	width := rect.Dx()
@@ -13,10 +28,8 @@ func Binarization(src image.Image) image.Image {
 	dst := image.NewRGBA(rect)
 	for x := 0; x < width; x += 1 {
 		for y := 0; y < height; y += 1 {
-			r, g, b, _ := src.At(x, y).RGBA()
-			gray := uint16((r*30 + g*59 + b*11) / 100)
 			c := color.Black
-			if gray > 32768 {
+			if Gray(src.At(x, y)) > 32768 {
 				c = color.White
 			}
 			dst.Set(x, y, c)
@@ -25,15 +38,14 @@ func Binarization(src image.Image) image.Image {
 	return dst
 }
 
-func Gray(src image.Image) image.Image {
+func GrayImg(src image.Image) image.Image {
 	rect := src.Bounds()
 	width := rect.Dx()
 	height := rect.Dy()
 	dst := image.NewRGBA(rect)
 	for x := 0; x < width; x += 1 {
 		for y := 0; y < height; y += 1 {
-			r, g, b, _ := src.At(x, y).RGBA()
-			gray := uint16((r*30 + g*59 + b*11) / 100)
+			gray := Gray(src.At(x, y))
 			dst.Set(x, y, color.Gray16{gray})
 		}
 	}
@@ -52,8 +64,7 @@ func Blur(src image.Image, ra int) image.Image {
 	for x := 0; x < ra*2+1; x += 1 {
 		col := make([]float64, ra*2+1)
 		for y := 0; y < ra*2+1; y += 1 {
-			col[y] = (1 / (2 * math.Pi * sigma * sigma)) * math.Pow(math.E, -(float64(x-ra)*float64(x-ra)+float64(y-ra)*float64(y-ra))/(4*sigma*sigma))
-
+			col[y] = Gaussian(x-ra, y-ra, sigma)
 			sum += col[y]
 		}
 		weight[x] = col
